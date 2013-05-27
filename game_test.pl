@@ -7,3 +7,9 @@
     
    Result = [{zhang3, [kill, hide]}, {li4, [health, hide]}, {wang5, [kill, health]}],
    RemainingCards = [kill, kill].
+
+:- removeUsedCard([kill, hide, hide], CardsAfter, kill),
+   CardsAfter = [hide, hide].
+
+:- removeUsedCard([kill, hide, hide], CardsAfter, hide),
+   CardsAfter = [kill, hide].
