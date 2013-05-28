@@ -1,7 +1,7 @@
 %
 % Data structure:
 %
-%   player(name, role, health, handCards)
+%   player(name, handCards, health, role)
 %
 %
 
@@ -26,10 +26,15 @@ round({Name,HandCards}, Players, [C1,C2|Cards], mo_pai, nil, nil) :-
 	append(HandCards, [C1,C2], HandCardsNew),
 	round({Name, HandCardsNew}, Players, Cards, chu_pai, nil, nil).
 % 出牌
-round({P1,HandCards}, Players, Cards, chu_pai,  nil, nil) :-
+round({P1,HandCards}, Players, Cards, chu_pai, nil, nil) :-
         chooceOneCard(HandCards, OneCard, RemainedHandCards),
         chooceOneTarget(Players, Target),
         round({P1,RemainedHandCards}, Players, Cards, chu_pai, OneCard, Target).
+
+round(Current, [P1|Players], Cards, chu_pai, done, _) :-
+	writeln('qi pai...'),
+	append(Players, [Current], PlayersNew),
+	round(P1, PlayersNew, Cards, mo_pai, nil, nil).
 
 % Debugging
 round(P, Players, Cards, Stage, PlayingCard, Target) :-
@@ -53,6 +58,7 @@ chooceOneTarget(Players, TargetPlayer) :-
 writePlayerNames([]).
 writePlayerNames([{N,_}|Other]) :- write(N), write(' '), writePlayerNames(Other).
 
+removeElement(E, done, E).
 removeElement([E|R], E, R).
 removeElement([_|R], E, [_|R2]) :- removeElement(R, E, R2).
 	
