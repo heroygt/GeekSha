@@ -1,36 +1,58 @@
-game(InitPlayers, Cards) :-
-    deal(InitPlayers, Cards, Players, RemainingCards),
-    round(Players, RemainingCards).
+%
+% Data structure:
+%
+%   player(name, role, health, handCards)
+%
+%
 
-deal([], Cards, [], Cards).
-deal([P1|Players], [C1,C2|Cards], [{P1, [C1,C2]}|Other], RemainingCards) :-
-    deal(Players, Cards, Other, RemainingCards).
 
-round([{P1Name,P1Cards}|Players], [C1,C2|Cards]) :-
-    %% 摸牌
-    append([C1, C2], P1Cards, P1Cards2),
-    %% 出牌
-    play(P1Name, P1Cards2, Players).
+game([P1|Players], Cards) :-
+	round(P1, Players, Cards, mo_pai, nil, nil).
 
-play(P1Name, P1Cards, Players) :-
-    write(P1Name), write(' has cards '), writeln(P1Cards), 
-    writeln('Choose a card:'),
-    read_line_to_codes(user_input, C), atom_codes(CardToUse, C),
-    write('There are players: '), writePlayers(Players), nl,
-    writeln('Choose a target:'),
-    read_line_to_codes(user_input, P), atom_codes(TargetPlayer, P),
-    removeUsedCard(P1Cards, P1CardsNew, CardToPlay), !,
-    write(P1Name), write(' has cards '), write(P1CardsNew), writeln(' left.'),
-    play(P1Name, P1CardsNew, Players).
- 
-    
-removeUsedCard([UsedCard|Cards], Cards, UsedCard).
-removeUsedCard([C1|CardsBefore], [C1|CardsAfter], UsedCard) :-
-    removeUsedCard(CardsBefore, CardsAfter, UsedCard).    
+%
+%  round(
+%     CurrentPlayer,    % Current player
+%     OtherPlayers,     % All players expect current player
+%     Cards,            % 
+%     Stage,            % mo_pai, chu_pai, pan_ding, etc. 
+%     PlayingCard,      % Playing card during chu_pai stage
+%     TargetPlayer      % Target player
+%  )
+%
 
-writePlayer({P1Name,_}) :- write(P1Name), write(' ').
+% 摸牌
+round({Name,HandCards}, Players, [C1,C2|Cards], mo_pai, nil, nil) :-
+        write('Current player: '), writeln(Name),
+	append(HandCards, [C1,C2], HandCardsNew),
+	round({Name, HandCardsNew}, Players, Cards, chu_pai, nil, nil).
+% 出牌
+round({P1,HandCards}, Players, Cards, chu_pai,  nil, nil) :-
+        chooceOneCard(HandCards, OneCard, RemainedHandCards),
+        chooceOneTarget(Players, Target),
+        round({P1,RemainedHandCards}, Players, Cards, chu_pai, OneCard, Target).
 
-writePlayers([]).
-writePlayers([P1|Players]) :-
-    writePlayer(P1),
-    writePlayers(Players).
+% Debugging
+round(P, Players, Cards, Stage, PlayingCard, Target) :-
+	write('Current player: '), writeln(P),
+	write('Players: '), writeln(Players),
+	write('Cards: '), writeln(Cards),
+	write('Stage: '), writeln(Stage),
+	write('Playing card: '), writeln(PlayingCard),
+	write('Target: '), writeln(Target).
+
+chooceOneCard(AllCards, ChoosedCard, RemainedCards) :-
+	write('Choose one card from '), write(AllCards), writeln(': '),
+        read_line_to_codes(user_input, C), atom_codes(ChoosedCard, C),
+        removeElement(AllCards, ChoosedCard, RemainedCards).
+
+chooceOneTarget(Players, TargetPlayer) :-
+	write('Choose one target player from '), writePlayerNames(Players), writeln(': '),
+        read_line_to_codes(user_input, P), atom_codes(TargetPlayer, P).
+
+
+writePlayerNames([]).
+writePlayerNames([{N,_}|Other]) :- write(N), write(' '), writePlayerNames(Other).
+
+removeElement([E|R], E, R).
+removeElement([_|R], E, [_|R2]) :- removeElement(R, E, R2).
+	
