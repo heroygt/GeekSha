@@ -16,7 +16,7 @@ game([P1|Players], Cards) :-
 
 % 摸牌
 round(P1, Players, Cards, mo_pai, nil, nil) :-
-        io_write('Current player: '), writePlayerName(P1), nl,
+        io_write('[Begin]Player: '), writePlayerName(P1), nl,
         playerGetNewCards(P1, Cards, P1New, RemainedCards),
 	round(P1New, Players, RemainedCards, chu_pai, nil, nil).
 % 出牌
@@ -40,7 +40,6 @@ round(P, Players, Cards, Stage, PlayingCard, Target) :-
 	io_write('Target: '), io_writeln(Target).
 
 chooceOneTarget(Players, TargetPlayer) :-
-	io_write('Choose one target player from '), writePlayerNames(Players), io_writeln(': '),
-        % read_line_to_codes(user_input, P), atom_codes(TargetPlayer, P),
-        io_read(TargetPlayer).
-	
+	io_write('[Target] Choose target: '), writePlayerNames(Players), io_writeln(': '),
+        io_choose_target(Players, TargetPlayer).
+        	

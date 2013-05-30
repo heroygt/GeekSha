@@ -14,17 +14,15 @@ playerGetNewCards({Name,HandCards,Health}, [C1,C2|Cards], {Name, HandCardsNew, H
         HandCardsNew = [C1,C2|HandCards].
 
 playerChooseCard({Name, HandCards, Health}, {Name, RemainedHandCards, Health}, Card) :-
-        io_write('Choose card from: '), io_write(HandCards), io_writeln(':'),
-        % read_line_to_codes(user_input, C), atom_codes(Card, C),
-        io_read(Card),
+        io_write('[Play]Choose card: '), io_write(HandCards), io_writeln(':'),
+        io_choose_card(HandCards, Card),
         removeElement(HandCards, Card, RemainedHandCards).
 
 playerDisposeCards({Name,HandCards,Health}, {Name,HandCards,Health}) :-
         length(HandCards, Num), not(Num > Health).
 playerDisposeCards({Name,HandCards,Health}, PlayerNew) :-
-        io_write('Choose a card from '), io_write(HandCards), io_writeln(' to dispose.'),
-        % read_line_to_codes(user_input, C), atom_codes(Card, C),
-        io_read(Card),
+        io_write('[Dispose]Choose cards: '), io_write(HandCards), io_writeln(':'),
+        io_choose_card(HandCards, Card),
         removeElement(HandCards, Card, HandCardsNew),
         playerDisposeCards({Name, HandCardsNew, Health}, PlayerNew).
 
