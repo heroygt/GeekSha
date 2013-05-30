@@ -22,7 +22,7 @@ playerDisposeCards({Name,HandCards,Health}, {Name,HandCards,Health}) :-
         length(HandCards, Num), not(Num > Health).
 playerDisposeCards({Name,HandCards,Health}, PlayerNew) :-
         io_write('[Dispose]Choose cards: '), io_write(HandCards), io_writeln(':'),
-        io_choose_card(HandCards, Card),
+        io_choose_dispose_card(HandCards, Card),
         removeElement(HandCards, Card, HandCardsNew),
         playerDisposeCards({Name, HandCardsNew, Health}, PlayerNew).
 

@@ -16,7 +16,7 @@ game([P1|Players], Cards) :-
 
 % 摸牌
 round(P1, Players, Cards, mo_pai, nil, nil) :-
-        io_write('[Begin]Player: '), writePlayerName(P1), nl,
+        io_write('[Begin]Player: '), writePlayerName(P1), io_nl,
         playerGetNewCards(P1, Cards, P1New, RemainedCards),
 	round(P1New, Players, RemainedCards, chu_pai, nil, nil).
 % 出牌
@@ -32,12 +32,14 @@ round(P1, [P2|Players], Cards, chu_pai, done, _) :-
 
 % Debugging
 round(P, Players, Cards, Stage, PlayingCard, Target) :-
-	io_write('Current player: '), io_writeln(P),
-	io_write('Players: '), io_writeln(Players),
-	io_write('Cards: '), io_writeln(Cards),
-	io_write('Stage: '), io_writeln(Stage),
-	io_write('Playing card: '), io_writeln(PlayingCard),
-	io_write('Target: '), io_writeln(Target).
+        writeln('----- begin of final result ------'),
+	write('Current player: '), writeln(P),
+	write('Players: '), writeln(Players),
+	write('Cards: '), writeln(Cards),
+	write('Stage: '), writeln(Stage),
+	write('Playing card: '), writeln(PlayingCard),
+	write('Target: '), writeln(Target),
+        writeln('----- end of final result ------').
 
 chooceOneTarget(Players, TargetPlayer) :-
 	io_write('[Target] Choose target: '), writePlayerNames(Players), io_writeln(': '),
