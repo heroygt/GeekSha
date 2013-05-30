@@ -1,10 +1,4 @@
-%
-% Data structure:
-%
-%   player(name, handCards, health, role)
-%
-%
-
+:-['player.pl'].
 
 game([P1|Players], Cards) :-
 	round(P1, Players, Cards, mo_pai, nil, nil).
@@ -21,20 +15,20 @@ game([P1|Players], Cards) :-
 %
 
 % 摸牌
-round({Name,HandCards,Health}, Players, [C1,C2|Cards], mo_pai, nil, nil) :-
-        write('Current player: '), writeln(Name),
-	append(HandCards, [C1,C2], HandCardsNew),
-	round({Name, HandCardsNew,Health}, Players, Cards, chu_pai, nil, nil).
+round(P1, Players, Cards, mo_pai, nil, nil) :-
+        write('Current player: '), writePlayerName(P1), nl,
+        playerGetNewCards(P1, Cards, P1New, RemainedCards),
+	round(P1New, Players, RemainedCards, chu_pai, nil, nil).
 % 出牌
-round({P1,HandCards,Health}, Players, Cards, chu_pai, nil, nil) :-
-        chooceOneCard(HandCards, OneCard, RemainedHandCards),
+round(P1, Players, Cards, chu_pai, nil, nil) :-
+        playerChooseCard(P1, P1New, OneCard),
         chooceOneTarget(Players, Target),
-        round({P1,RemainedHandCards,Health}, Players, Cards, chu_pai, OneCard, Target).
+        round(P1New, Players, Cards, chu_pai, OneCard, Target).
 
-round(Current, [P1|Players], Cards, chu_pai, done, _) :-
-	threwCardsAway(Current, CurrentNew),
-	append(Players, [CurrentNew], PlayersNew),
-	round(P1, PlayersNew, Cards, mo_pai, nil, nil).
+round(P1, [P2|Players], Cards, chu_pai, done, _) :-
+	playerDisposeCards(P1, P1New),
+	append(Players, P1New, PlayersNew),
+	round(P2, PlayersNew, Cards, mo_pai, nil, nil).
 
 % Debugging
 round(P, Players, Cards, Stage, PlayingCard, Target) :-
@@ -45,28 +39,7 @@ round(P, Players, Cards, Stage, PlayingCard, Target) :-
 	write('Playing card: '), writeln(PlayingCard),
 	write('Target: '), writeln(Target).
 
-chooceOneCard(AllCards, ChoosedCard, RemainedCards) :-
-	write('Choose one card from '), write(AllCards), writeln(': '),
-        read_line_to_codes(user_input, C), atom_codes(ChoosedCard, C),
-        removeElement(AllCards, ChoosedCard, RemainedCards).
-
 chooceOneTarget(Players, TargetPlayer) :-
 	write('Choose one target player from '), writePlayerNames(Players), writeln(': '),
         read_line_to_codes(user_input, P), atom_codes(TargetPlayer, P).
-
-threwCardsAway({Name, HandCards, Health}, {Name, HandCards, Health}) :-
-	length(HandCards, Num), not(Num > Health).
-threwCardsAway({Name, HandCards, Health}, Updated) :-
-	write('Choose a card from '), write(HandCards), writeln(' and threw away'),
-        read_line_to_codes(user_input, C), atom_codes(Card, C),
-	removeElement(HandCards, Card, HandCardsNew),
-	threwCardsAway({Name, HandCardsNew, Health}, Updated).
-	
-
-writePlayerNames([]).
-writePlayerNames([{N,_,_}|Other]) :- write(N), write(' '), writePlayerNames(Other).
-
-removeElement(E, done, E).
-removeElement([E|R], E, R).
-removeElement([H|R], E, [H|R2]) :- removeElement(R, E, R2).
 	
