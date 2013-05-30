@@ -27,7 +27,7 @@ round(P1, Players, Cards, chu_pai, nil, nil) :-
 
 round(P1, [P2|Players], Cards, chu_pai, done, _) :-
 	playerDisposeCards(P1, P1New),
-	append(Players, P1New, PlayersNew),
+	append(Players, [P1New], PlayersNew),
 	round(P2, PlayersNew, Cards, mo_pai, nil, nil).
 
 % Debugging
