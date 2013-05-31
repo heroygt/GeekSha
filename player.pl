@@ -26,6 +26,15 @@ playerDisposeCards({Name,HandCards,Health}, PlayerNew) :-
         removeElement(HandCards, Card, HandCardsNew),
         playerDisposeCards({Name, HandCardsNew, Health}, PlayerNew).
 
+playerFindByName([{Name,HandCards,Health}|_], Name, {Name,HandCards,Health}).
+playerFindByName([_|Players], Name, Player) :- playerFindByName(Players, Name, Player). 
+
+playerMeetKill(Player, hide, Player).
+playerMeetKill({N,HC,Health}, _, {N,HC,Health2}) :- Health2 is Health - 1.
+
+playerUpdate([{Name,_,_}|Players], {Name,HC,H}, [{Name,HC,H}|Players]).
+playerUpdate([P|Players], P, [P|Players2]) :- playerUpdate(Players, P, Players2).
+
 removeElement(E, done, E).
 removeElement([E|R], E, R).
 removeElement([H|R], E, [H|R2]) :- removeElement(R, E, R2).
